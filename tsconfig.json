@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "app/prueba/page.tsx", "app/tarjeta/js/images.jsx", "app/tarjeta/js/font.jsx"  ],
   "exclude": ["node_modules"]
 }
