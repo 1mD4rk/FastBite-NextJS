@@ -1,8 +1,8 @@
 'use client';
 
 import 'tailwindcss';
-import Images from '../js/images.jsx';
-import { josefin } from './font.jsx';
+import Images from './images.jsx';
+import { nunito } from './font.jsx';
 
 export default function Navbar() {
   return (
@@ -12,10 +12,10 @@ export default function Navbar() {
 
         {/* --- IZQUIERDA: Logo y Textos --- */}
         <div className="flex items-center shrink-0">
-          <Images archivoImagen={require('../images/hamburguer.png')} nombre="hamburguer" className="h-11.5 w-auto" />
+          <Images archivoImagen={require('../images/hamburguer.png')} nombre="hamburguer" className="h-10.5 w-auto" />
             <div className="grid justify-items-start">
-                <Images archivoImagen={require('../images/fastbite.png')} nombre="fastbite" className="h-7 w-auto ml-2" />
-                <Images archivoImagen={require('../images/subtitle.png')} nombre="subtitle" className="h-4 w-auto ml-2" />
+                <Images archivoImagen={require('../images/fastbite.png')} nombre="fastbite" className="h-6.5 w-auto ml-2" />
+                <Images archivoImagen={require('../images/subtitle.png')} nombre="subtitle" className="h-3.5 w-auto ml-2" />
             </div>
         </div>
 
@@ -47,14 +47,14 @@ export default function Navbar() {
                 nombre="user" 
                 className="size-8 rounded-full outline -outline-offset-1 outline-white/25" 
             />
-            <p className={`text-white mr-3 font-medium ${josefin.className}`}>dark</p>
+            <p className={`text-white mr-3 font-medium ${nunito.className}`}>dark</p>
         </div>
     </div>
   </div>
 
+    {/* IMAGENES LOGO */}
   <el-disclosure id="mobile-menu" hidden className="block sm:hidden">
     <div className="space-y-1 px-2 pt-2 pb-3">
-      {/* <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" --> */}
       <a href="#" aria-current="page" className="block rounded-md bg-gray-950/50 px-3 py-2 text-base font-medium text-white">Dashboard</a>
       <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">Team</a>
       <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">Projects</a>
