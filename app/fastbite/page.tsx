@@ -1,16 +1,19 @@
 'use client';
 
-
-import Images from './js/images.jsx';
-import Navbar from './js/navbar.jsx';
+import Navbar from './jsx/navbar.jsx';
+import Title from './jsx/title.jsx';
 
 export default function HomePage() {
 
     return (
-        <div className='bg-white h-screen'>
+        <div className='bg-[#F8F9FA] h-screen'>
 
             <Navbar />
+            <Title title="Gestión de Productos"/>
             
+            <div className="box-border size-32 border-2 p-2">
+                ...
+            </div>
             
 
         </div>
