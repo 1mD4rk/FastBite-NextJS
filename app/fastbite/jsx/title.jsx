@@ -13,7 +13,7 @@ export default function Header({ title }) {
                     Administra el menú de FastBite 🍔 
                 </p>
             </div>   
-            <button className="bg-[#B8001F] hover:bg-[#9c0019ff] text-white font-bold py-2 px-4 rounded transition-colors">+ Añadir Producto</button>
+            <button className="cursor-pointer bg-[#B8001F] hover:bg-[#9c0019ff] text-white font-bold py-2 px-4 rounded transition-colors">+ Añadir Producto</button>
         </div>
     </div>
   );
