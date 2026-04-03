@@ -1,72 +1,73 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { createBrowserClient } from '@supabase/ssr';
 import { nunito } from './jsx/font.jsx';
 import Navbar from './jsx/navbar.jsx';
 import Title from './jsx/title.jsx';
 import Cardfood from './jsx/tarjeta.jsx';
+import Aniadir from './jsx/aniadir.jsx';
 
 export default function HomePage() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [categorias, setCategorias] = useState<any[]>([]);
+    
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    useEffect(() => {
+        const fetchCategorias = async () => {
+            const { data, error } = await supabase
+                .from('categorias')
+                .select('*')
+                .order('nombre', { ascending: true });
+
+            if (error) {
+                console.error('Error cargando categorías:', error);
+            } else {
+                setCategorias(data || []); 
+            }
+        };
+        fetchCategorias();
+    }, [supabase]);
 
     return (
         <div className='bg-[#F8F9FA] min-h-screen'>
-
             <header><Navbar /></header>
-            <Title title="Gestión de Productos"/>
+            <Title 
+                title="Gestión de Productos" 
+                onOpenModal={() => setIsModalOpen(true)} 
+            />
             
-            <div className='flex justify-center'>
-                    {/* Contenedor de la tarjeta */}
-                    <div className="rounded-lg border border-[#d1d1d1] shadow-lg p-1 w-326 h-12">
-                        
-                        {/* Contenido Flex (Fila) */}
-                        <div className="flex items-center">
-      
-                            {/* Círculo Rojo (Icono/Número) */}
-                            <div className=" bg-[#B8001F]/12 p-0 rounded-full mr-3 mt-1 ml-2 size-7.5 flex items-center justify-center">
-                                <span className={`text-[#B8001F] font-bold text-sm ${nunito.className}`}>
-                                    {/* Aquí va tu variable, ej: {productos.length} */}
-                                    3
-                                </span>
-                            </div>
-
-                            {/* Texto */}
-                            <div>
-                                <p className={`font-bold text-[15px] text-[#000000ff] mt-1 ${nunito.className}`}>Total Productos</p>
-                            </div>
-                            
-                        </div>
-                    </div>
-            </div>
-
             <div className="p-10 flex flex-wrap justify-center gap-6">
                 <Cardfood 
-                precio="12.50" 
-                categoria="Hamburguesas" 
-                tamaño="Grande" 
-                titulo="Super HotDog Deluxe" 
-                descripcion="I hate niggers" 
-                estado="visible" 
-                imagen ="hotdog.png"
+                    precio="12.50" 
+                    categoria="Hot Dogs" 
+                    tamaño="Grande" 
+                    titulo="Super HotDog Deluxe" 
+                    descripcion="Delicioso hot dog con ingredientes premium y salsa especial de la casa." 
+                    estado="visible" 
+                    imagen="hotdog.png"
                 />
-
                 <Cardfood 
-                precio="12.50" 
-                categoria="Hamburguesas" 
-                tamaño="Grande" 
-                titulo="Combo Goku" 
-                descripcion="- Papas fritas medianas - Hamburguesa (pollo o carne) - Refresco frescolita - Juguete de Goku" 
-                estado="novisible" 
-                imagen ="goku.png"
+                    precio="12.50" 
+                    categoria="Combos" 
+                    tamaño="Grande" 
+                    titulo="Combo Goku" 
+                    descripcion="- Papas fritas medianas - Hamburguesa - Refresco - Juguete coleccionable." 
+                    estado="novisible" 
+                    imagen="goku.png"
                 />
-
-                
             </div>
 
-
+            <Aniadir 
+                isModalOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                categorias={categorias as never[]} 
+            />
         </div>
-
-        
-        
-
     );
 }
 

@@ -1,3 +1,9 @@
+npm install @supabase/supabase-js
+
+npm install @supabase/ssr @supabase/supabase-js
+
+----
+
 INSERT INTO categorias (nombre)
 VALUES 
   ('Hamburguesas'),
@@ -12,5 +18,11 @@ VALUES
   ('Combos'),
   ('Promociones');
   
-  -------
+--------
 
+.env.local
+
+NEXT_PUBLIC_SUPABASE_URL=https://pxrzcbjnyybayltvpusn.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_-E4Ivv-CCj_3W2ypukQV_Q_0JQHkpzj
+
+--------
