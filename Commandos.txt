@@ -1,0 +1,17 @@
+INSERT INTO categorias (nombre)
+VALUES 
+  ('Hamburguesas'),
+  ('Papas Fritas'),
+  ('Hot Dogs'),
+  ('Pizzas'),
+  ('Alitas de Pollo'),
+  ('Sandwiches'),
+  ('Tacos'),
+  ('Bebidas'),
+  ('Postres'),
+  ('Combos'),
+  ('Promociones');
+  
+  ------
+
+  
