@@ -47,7 +47,7 @@ export default function Navbar() {
                 nombre="user" 
                 className="size-8 rounded-full outline -outline-offset-1 outline-white/25" 
             />
-            <p className={`text-white mr-3 font-medium ${nunito.className}`}>dark</p>
+            <p className={`text-white mr-3 font-medium ${nunito.className}`}>admin</p>
         </div>
     </div>
   </div>

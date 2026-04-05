@@ -26,3 +26,12 @@ NEXT_PUBLIC_SUPABASE_URL=https://pxrzcbjnyybayltvpusn.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_-E4Ivv-CCj_3W2ypukQV_Q_0JQHkpzj
 
 --------
+
+utils/supabase.js
+
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)

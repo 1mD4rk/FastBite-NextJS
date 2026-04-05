@@ -76,9 +76,31 @@ export default function HomePage() {
             mensaje: `¿Estás seguro de que deseas eliminar permanentemente "${producto.nombre}"? Esta acción no se puede deshacer.`,
             tipo: 'danger',
             accion: async () => {
-                console.log("Eliminando producto ID:", producto.id);
-                setIsConfirmarOpen(false);
-                fetchData(); // Recargar lista
+                try {
+                    // Eliminar imagen del storage si existe
+                    if (producto.imagen) {
+                        const fileName = producto.imagen.split('/').pop();
+                        if (fileName) {
+                            const { error: storageError } = await supabase.storage
+                                .from('productos')
+                                .remove([fileName]);
+                            if (storageError) console.error('Error al eliminar imagen:', storageError);
+                        }
+                    }
+                    // Eliminar registro de la base de datos
+                    const { error } = await supabase
+                        .from('productos')
+                        .delete()
+                        .eq('id', producto.id);
+                    if (error) throw error;
+
+                    setIsConfirmarOpen(false);
+                    fetchData(); // Recargar lista
+                } catch (err) {
+                    console.error('Error al eliminar producto:', err);
+                    alert('No se pudo eliminar el producto');
+                    setIsConfirmarOpen(false);
+                }
             }
         });
         setIsConfirmarOpen(true);
@@ -86,16 +108,25 @@ export default function HomePage() {
 
     const abrirCambiarEstado = (producto: any) => {
         setProductoSeleccionado(producto);
-        const nuevoEstado = producto.estado === 'visible' ? 'oculto' : 'visible';
+        const nuevoEstado = !producto.estado;
         setConfigConfirmacion({
             titulo: "Cambiar Visibilidad",
-            mensaje: `¿Deseas cambiar el estado de "${producto.nombre}" a ${nuevoEstado}?`,
+            mensaje: `¿Deseas ${nuevoEstado ? 'activar' : 'desactivar'} la visibilidad de "${producto.nombre}"?`,
             tipo: 'warning',
             accion: async () => {
-                console.log("Cambiando estado de ID:", producto.id, "a", nuevoEstado);
-                // Aquí iría tu lógica de update en Supabase
-                setIsConfirmarOpen(false);
-                fetchData();
+                try {
+                    const { error } = await supabase
+                        .from('productos')
+                        .update({ estado: nuevoEstado })
+                        .eq('id', producto.id);
+                    if (error) throw error;
+                    setIsConfirmarOpen(false);
+                    fetchData(); // Refrescar lista
+                } catch (err) {
+                    console.error('Error al cambiar estado:', err);
+                    alert('No se pudo cambiar el estado del producto');
+                    setIsConfirmarOpen(false);
+                }
             }
         });
         setIsConfirmarOpen(true);
@@ -120,8 +151,7 @@ export default function HomePage() {
                             {/* Círculo Rojo (Icono/Número) */}
                             <div className=" bg-[#B8001F]/12 p-0 rounded-full mr-3 mt-1 ml-2 size-7.5 flex items-center justify-center">
                                 <span className={`text-[#B8001F] font-bold text-sm ${nunito.className}`}>
-                                    {/* Aquí va tu variable, ej: {productos.length} */}
-                                    3
+                                    {productos.length}
                                 </span>
                             </div>
 
@@ -150,7 +180,7 @@ export default function HomePage() {
                                 tamaño={producto.tamano || "Estándar"} 
                                 titulo={producto.nombre} 
                                 descripcion={producto.descripcion || "Sin descripción"} 
-                                estado={producto.estado || "visible"} 
+                                estado={producto.estado} 
                                 imagen={producto.imagen || "goku.png"}
                                 onEdit={() => abrirEditar(producto)}
                                 onDelete={() => abrirEliminar(producto)}
@@ -170,6 +200,7 @@ export default function HomePage() {
                 isModalOpen={isAniadirOpen} 
                 onClose={() => setIsAniadirOpen(false)} 
                 categorias={categorias as any} 
+                onProductAdded={fetchData}
             />
 
             {/* Modal para Editar Existente */}
@@ -178,6 +209,7 @@ export default function HomePage() {
                 onClose={() => setIsEditarOpen(false)} 
                 producto={productoSeleccionado} 
                 categorias={categorias as any} 
+                onProductUpdated={fetchData}
             />
 
             {/* Modal de Confirmación Genérico (Borrar/Desactivar) */}
