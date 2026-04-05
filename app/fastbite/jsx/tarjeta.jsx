@@ -4,7 +4,7 @@ import 'tailwindcss';
 import Images from './images.jsx';
 import { nunito } from './font.jsx';
 
-export default function Tarjeta({precio, categoria, tamaño, titulo, descripcion, estado, imagen}) {
+export default function Tarjeta({precio, categoria, tamaño, titulo, descripcion, estado, imagen, onEdit, onDelete, onToggleVisible}) {
   return (
     <div className="w-70 max-w-sm bg-white rounded-lg shadow-sm border-3 border-[#B8001F] overflow-hidden flex flex-col">
       
@@ -64,15 +64,15 @@ export default function Tarjeta({precio, categoria, tamaño, titulo, descripcion
           {/* Botones de Acción */}
           <div className="flex gap-2">
             {/* Editar */}
-            <button className="cursor-pointer p-1.5 border border-gray-300 text-gray-500 rounded hover:bg-gray-200  hover:text-blue-600 transition" title="Editar">
+            <button onClick={onEdit} className="cursor-pointer p-1.5 border border-gray-300 text-gray-500 rounded hover:bg-gray-200  hover:text-blue-600 transition" title="Editar">
               ✏️
             </button>
             {/* Desactivar */}
-            <button className="cursor-pointer p-1.5 border border-yellow-400 text-yellow-600 rounded hover:bg-yellow-200 transition" title="Desactivar">
+            <button onClick={onToggleVisible} className="cursor-pointer p-1.5 border border-yellow-400 text-yellow-600 rounded hover:bg-yellow-200 transition" title="Desactivar">
               👁️
             </button>
             {/* Eliminar */}
-            <button className="cursor-pointer p-1.5 border border-red-400 text-red-500 rounded hover:bg-red-200 transition" title="Eliminar">
+            <button onClick={onDelete}className="cursor-pointer p-1.5 border border-red-400 text-red-500 rounded hover:bg-red-200 transition" title="Eliminar">
               🗑️
             </button>
           </div>

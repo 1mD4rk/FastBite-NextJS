@@ -7,15 +7,43 @@ import Navbar from './jsx/navbar.jsx';
 import Title from './jsx/title.jsx';
 import Cardfood from './jsx/tarjeta.jsx';
 import Aniadir from './jsx/aniadir.jsx';
+import EditarProducto from './jsx/editar.jsx';
+import ConfirmarAccion from './jsx/confirmar.jsx';
 
 export default function HomePage() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    // --- ESTADOS DE MODALES ---
+    const [isAniadirOpen, setIsAniadirOpen] = useState(false);
+    const [isEditarOpen, setIsEditarOpen] = useState(false);
+    const [isConfirmarOpen, setIsConfirmarOpen] = useState(false);
+
+    // --- ESTADOS DE DATOS ---
     const [categorias, setCategorias] = useState<any[]>([]);
-    
+    const [productos, setProductos] = useState<any[]>([]);
+    const [productoSeleccionado, setProductoSeleccionado] = useState<any>(null);
+    const [configConfirmacion, setConfigConfirmacion] = useState({
+        titulo: '',
+        mensaje: '',
+        tipo: 'danger' as 'danger' | 'warning',
+        accion: () => {}
+    });
+
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
+
+    const fetchData = async () => {
+        const { data, error } = await supabase
+            .from('productos')
+            .select('*')
+            .order('nombre', { ascending: true });
+
+        if (error) {
+            console.error('Error cargando productos:', error);
+        } else {
+            setProductos(data || []); 
+        }
+    };
 
     useEffect(() => {
         const fetchCategorias = async () => {
@@ -31,41 +59,111 @@ export default function HomePage() {
             }
         };
         fetchCategorias();
+        fetchData();
     }, [supabase]);
 
+    // --- MANEJADORES DE EVENTOS ---
+
+    const abrirEditar = (producto: any) => {
+        setProductoSeleccionado(producto);
+        setIsEditarOpen(true);
+    };
+
+    const abrirEliminar = (producto: any) => {
+        setProductoSeleccionado(producto);
+        setConfigConfirmacion({
+            titulo: "Eliminar Producto",
+            mensaje: `¿Estás seguro de que deseas eliminar permanentemente "${producto.nombre}"? Esta acción no se puede deshacer.`,
+            tipo: 'danger',
+            accion: async () => {
+                console.log("Eliminando producto ID:", producto.id);
+                setIsConfirmarOpen(false);
+                fetchData(); // Recargar lista
+            }
+        });
+        setIsConfirmarOpen(true);
+    };
+
+    const abrirCambiarEstado = (producto: any) => {
+        setProductoSeleccionado(producto);
+        const nuevoEstado = producto.estado === 'visible' ? 'oculto' : 'visible';
+        setConfigConfirmacion({
+            titulo: "Cambiar Visibilidad",
+            mensaje: `¿Deseas cambiar el estado de "${producto.nombre}" a ${nuevoEstado}?`,
+            tipo: 'warning',
+            accion: async () => {
+                console.log("Cambiando estado de ID:", producto.id, "a", nuevoEstado);
+                // Aquí iría tu lógica de update en Supabase
+                setIsConfirmarOpen(false);
+                fetchData();
+            }
+        });
+        setIsConfirmarOpen(true);
+    };
+
     return (
-        <div className='bg-[#F8F9FA] min-h-screen'>
+        <div className={`bg-[#F8F9FA] min-h-screen ${nunito.className}`}>
             <header><Navbar /></header>
+            
             <Title 
                 title="Gestión de Productos" 
-                onOpenModal={() => setIsModalOpen(true)} 
+                onOpenModal={() => setIsAniadirOpen(true)} 
             />
             
             <div className="p-10 flex flex-wrap justify-center gap-6">
-                <Cardfood 
-                    precio="12.50" 
-                    categoria="Hot Dogs" 
-                    tamaño="Grande" 
-                    titulo="Super HotDog Deluxe" 
-                    descripcion="Delicioso hot dog con ingredientes premium y salsa especial de la casa." 
-                    estado="visible" 
-                    imagen="hotdog.png"
-                />
-                <Cardfood 
-                    precio="12.50" 
-                    categoria="Combos" 
-                    tamaño="Grande" 
-                    titulo="Combo Goku" 
-                    descripcion="- Papas fritas medianas - Hamburguesa - Refresco - Juguete coleccionable." 
-                    estado="novisible" 
-                    imagen="goku.png"
-                />
+                {productos.length > 0 ? (
+                    productos.map((producto) => {
+                        const categoriaDelProducto = categorias.find(
+                            (c) => c.id === producto.id_categoria
+                        );
+                        const nombreCategoria = categoriaDelProducto ? categoriaDelProducto.nombre : "Sin categoría";
+
+                        return (
+                            <Cardfood 
+                                key={producto.id}
+                                precio={producto.precio} 
+                                categoria={nombreCategoria} 
+                                tamaño={producto.tamano || "Estándar"} 
+                                titulo={producto.nombre} 
+                                descripcion={producto.descripcion || "Sin descripción"} 
+                                estado={producto.estado || "visible"} 
+                                imagen={producto.imagen || "goku.png"}
+                                onEdit={() => abrirEditar(producto)}
+                                onDelete={() => abrirEliminar(producto)}
+                                onToggleVisible={() => abrirCambiarEstado(producto)}
+                            />
+                        );
+                    })
+                ) : (
+                    <p className="text-gray-500">Cargando productos o no hay productos disponibles...</p>
+                )}
             </div>
 
+            {/* --- COMPONENTES DE MODAL --- */}
+
+            {/* Modal para Añadir Nuevo */}
             <Aniadir 
-                isModalOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
-                categorias={categorias as never[]} 
+                isModalOpen={isAniadirOpen} 
+                onClose={() => setIsAniadirOpen(false)} 
+                categorias={categorias as any} 
+            />
+
+            {/* Modal para Editar Existente */}
+            <EditarProducto 
+                isOpen={isEditarOpen} 
+                onClose={() => setIsEditarOpen(false)} 
+                producto={productoSeleccionado} 
+                categorias={categorias as any} 
+            />
+
+            {/* Modal de Confirmación Genérico (Borrar/Desactivar) */}
+            <ConfirmarAccion 
+                isOpen={isConfirmarOpen} 
+                onClose={() => setIsConfirmarOpen(false)} 
+                onConfirm={configConfirmacion.accion}
+                titulo={configConfirmacion.titulo}
+                mensaje={configConfirmacion.mensaje}
+                tipo={configConfirmacion.tipo}
             />
         </div>
     );
