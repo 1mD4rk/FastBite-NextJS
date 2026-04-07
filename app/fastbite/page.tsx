@@ -11,7 +11,7 @@ import EditarProducto from './jsx/editar.jsx';
 import ConfirmarAccion from './jsx/confirmar.jsx';
 
 export default function HomePage() {
-    // --- ESTADOS DE MODALES ---
+    // -- ESTADOS DE MODALES --
     const [isAniadirOpen, setIsAniadirOpen] = useState(false);
     const [isEditarOpen, setIsEditarOpen] = useState(false);
     const [isConfirmarOpen, setIsConfirmarOpen] = useState(false);
